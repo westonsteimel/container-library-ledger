@@ -1,7 +1,30 @@
+ARG LEDGER_VERSION="v3.1.3"
+
 FROM alpine:edge as builder
 
-RUN apk add --no-cache --repository http://nl.alpinelinux.org/alpine/edge/testing \
-    ledger \
+ARG LEDGER_VERSION
+ENV LEDGER_VERSION "${LEDGER_VERSION}"
+
+WORKDIR /build
+
+RUN apk add --no-cache \
+    cmake \
+    build-base \
+    boost-dev \
+    gmp-dev \
+    mpfr-dev \
+    texinfo \
+    graphviz \
+    doxygen \
+    gettext \
+    git \
+    libstdc++ \
+    && git clone --branch "${LEDGER_VERSION}" --depth 1 "https://github.com/ledger/ledger" \
+    && cd ledger \
+	&& cmake -DCMAKE_BUILD_TYPE=Release \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+	&& make \
+    && make install \
     && rm -rf /var/cache \
     && addgroup ledger \
     && adduser -G ledger -s /bin/sh -D ledger
@@ -31,3 +54,10 @@ USER ledger
 WORKDIR /home/ledger/data
 
 ENTRYPOINT ["ledger"]
+
+LABEL org.opencontainers.image.title="ledger" \
+    org.opencontainers.image.description="ledger in Docker" \ 
+    org.opencontainers.image.url="https://github.com/westonsteimel/docker-ledger" \ 
+    org.opencontainers.image.source="https://github.com/westonsteimel/docker-ledger" \
+    org.opencontainers.image.version="${LEDGER_VERSION}" \
+    version="${LEDGER_VERSION}"
