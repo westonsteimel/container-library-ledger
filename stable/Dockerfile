@@ -21,8 +21,10 @@ RUN apk add --no-cache \
     libstdc++ \
     && git clone --branch "${LEDGER_VERSION}" --depth 1 "https://github.com/ledger/ledger" \
     && cd ledger \
-	&& cmake -DCMAKE_BUILD_TYPE=Release \
-		-DCMAKE_INSTALL_PREFIX=/usr \
+    && rm /usr/bin/python \
+    && ln -s /usr/bin/python3 /usr/bin/python \
+	&& cmake . -DCMAKE_BUILD_TYPE=Release \
+    -DCMAKE_INSTALL_LIBDIR:PATH=lib \
 	&& make \
     && make install \
     && rm -rf /var/cache \
@@ -35,21 +37,21 @@ ARG LEDGER_VERSION
 
 COPY --from=builder /etc/passwd /etc/passwd
 COPY --from=builder /lib/ld-musl-x86_64.so.1 /lib/
-COPY --from=builder /usr/lib64/libledger.so.3 /usr/lib64/
+COPY --from=builder /usr/local/lib/libledger.so.* /usr/local/lib/
 COPY --from=builder /usr/lib/libboost_filesystem.so.*.*.* /usr/lib/
-COPY --from=builder /usr/lib/libstdc++.so.6 /usr/lib/
-COPY --from=builder /usr/lib/libgcc_s.so.1 /usr/lib/
-COPY --from=builder /usr/lib/libmpfr.so.6 /usr/lib/
-COPY --from=builder /usr/lib/libgmp.so.10 /usr/lib/
-COPY --from=builder /usr/lib/libboost_iostreams.so.*.*.* /usr/lib/
-COPY --from=builder /usr/lib/libboost_regex.so.*.*.* /usr/lib/
-COPY --from=builder /lib/libz.so.1 /lib/
-COPY --from=builder /usr/lib/libbz2.so.1 /usr/lib/
-COPY --from=builder /usr/lib/liblzma.so.5 /usr/lib/
-COPY --from=builder /usr/lib/libicui18n.so.64 /usr/lib/
-COPY --from=builder /usr/lib/libicuuc.so.64 /usr/lib/
-COPY --from=builder /usr/lib/libicudata.so.64 /usr/lib/
-COPY --from=builder /usr/bin/ledger /usr/local/bin/ledger
+COPY --from=builder	/usr/lib/libstdc++.so.6 /usr/lib/
+COPY --from=builder	/usr/lib/libgcc_s.so.1 /usr/lib/
+COPY --from=builder	/usr/lib/libmpfr.so.* /usr/lib/
+COPY --from=builder	/usr/lib/libgmp.so.* /usr/lib/
+COPY --from=builder	/usr/lib/libboost_iostreams.so.*.*.* /usr/lib/
+COPY --from=builder	/usr/lib/libboost_regex.so.*.*.* /usr/lib/
+COPY --from=builder	/lib/libz.so.1 /lib/
+COPY --from=builder	/usr/lib/libbz2.so.1 /usr/lib/
+COPY --from=builder	/usr/lib/liblzma.so.5 /usr/lib/
+COPY --from=builder	/usr/lib/libicui18n.so.64 /usr/lib/
+COPY --from=builder	/usr/lib/libicuuc.so.64 /usr/lib/
+COPY --from=builder	/usr/lib/libicudata.so.64 /usr/lib/
+COPY --from=builder /usr/local/bin/ledger /usr/local/bin/ledger
 
 USER ledger
 
@@ -58,8 +60,9 @@ WORKDIR /home/ledger/data
 ENTRYPOINT ["ledger"]
 
 LABEL org.opencontainers.image.title="ledger" \
-    org.opencontainers.image.description="ledger in Docker" \ 
-    org.opencontainers.image.url="https://github.com/westonsteimel/docker-ledger" \ 
+    org.opencontainers.image.description="ledger in Docker" \
+    org.opencontainers.image.url="https://github.com/westonsteimel/docker-ledger" \
     org.opencontainers.image.source="https://github.com/westonsteimel/docker-ledger" \
     org.opencontainers.image.version="${LEDGER_VERSION}" \
     version="${LEDGER_VERSION}"
+
