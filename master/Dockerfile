@@ -21,7 +21,6 @@ RUN apk add --no-cache \
     libstdc++ \
     && git clone --branch "${LEDGER_VERSION}" --depth 1 "https://github.com/ledger/ledger" \
     && cd ledger \
-    && rm /usr/bin/python \
     && ln -s /usr/bin/python3 /usr/bin/python \
 	&& cmake . -DCMAKE_BUILD_TYPE=Release \
     -DCMAKE_INSTALL_LIBDIR:PATH=lib \
