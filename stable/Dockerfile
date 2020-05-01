@@ -1,4 +1,4 @@
-ARG LEDGER_VERSION="v3.1.3"
+ARG LEDGER_VERSION="v3.2.0"
 
 FROM alpine:edge as builder
 
