@@ -12,7 +12,7 @@ RUN apk add --no-cache \
     build-base \
     boost-dev \
     gmp-dev \
-    mpfr4-dev \
+    mpfr-dev \
     texinfo \
     graphviz \
     doxygen \
@@ -47,9 +47,9 @@ COPY --from=builder	/usr/lib/libboost_regex.so.*.*.* /usr/lib/
 COPY --from=builder	/lib/libz.so.1 /lib/
 COPY --from=builder	/usr/lib/libbz2.so.1 /usr/lib/
 COPY --from=builder	/usr/lib/liblzma.so.5 /usr/lib/
-COPY --from=builder	/usr/lib/libicui18n.so.66 /usr/lib/
-COPY --from=builder	/usr/lib/libicuuc.so.66 /usr/lib/
-COPY --from=builder	/usr/lib/libicudata.so.66 /usr/lib/
+COPY --from=builder	/usr/lib/libicui18n.so.67 /usr/lib/
+COPY --from=builder	/usr/lib/libicuuc.so.67 /usr/lib/
+COPY --from=builder	/usr/lib/libicudata.so.67 /usr/lib/
 COPY --from=builder /usr/local/bin/ledger /usr/local/bin/ledger
 
 USER ledger
