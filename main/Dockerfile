@@ -11,6 +11,7 @@ RUN apk add --no-cache \
     cmake \
     build-base \
     boost-dev \
+    boost-static \
     gmp-dev \
     mpfr-dev \
     texinfo \
@@ -21,10 +22,18 @@ RUN apk add --no-cache \
     libstdc++ \
     && git clone --branch "${LEDGER_VERSION}" --depth 1 "https://github.com/ledger/ledger" \
     && cd ledger \
-    && ln -s /usr/bin/python3 /usr/bin/python \
-	&& cmake . -DCMAKE_BUILD_TYPE=Release \
+    && ln -s /usr/bin/python3 /usr/bin/python
+
+RUN cd ledger \
+    && cmake . -DCMAKE_BUILD_TYPE=Release \
     -DCMAKE_INSTALL_LIBDIR:PATH=lib \
-	&& make \
+    -DBUILD_SHARED_LIBS=OFF \
+    -DBUILD_LIBRARY=OFF \
+    -DUSE_PYTHON=OFF \
+	-DCMAKE_FIND_LIBRARY_SUFFIXES=".a" \
+    -DCMAKE_EXE_LINKER_FLAGS="-static -static-libstdc++ -static-libgcc" \
+    -DBoost_USE_STATIC_LIBS=ON \
+    && make \
     && make install \
     && rm -rf /var/cache \
     && addgroup ledger \
@@ -36,20 +45,6 @@ ARG LEDGER_VERSION
 
 COPY --from=builder /etc/passwd /etc/passwd
 COPY --from=builder /lib/ld-musl-x86_64.so.1 /lib/
-COPY --from=builder /usr/local/lib/libledger.so.* /usr/local/lib/
-COPY --from=builder /usr/lib/libboost_filesystem.so.*.*.* /usr/lib/
-COPY --from=builder	/usr/lib/libstdc++.so.6 /usr/lib/
-COPY --from=builder	/usr/lib/libgcc_s.so.1 /usr/lib/
-COPY --from=builder	/usr/lib/libmpfr.so.* /usr/lib/
-COPY --from=builder	/usr/lib/libgmp.so.* /usr/lib/
-COPY --from=builder	/usr/lib/libboost_iostreams.so.*.*.* /usr/lib/
-COPY --from=builder	/usr/lib/libboost_regex.so.*.*.* /usr/lib/
-COPY --from=builder	/lib/libz.so.1 /lib/
-COPY --from=builder	/usr/lib/libbz2.so.1 /usr/lib/
-COPY --from=builder	/usr/lib/liblzma.so.5 /usr/lib/
-COPY --from=builder	/usr/lib/libicui18n.so.67 /usr/lib/
-COPY --from=builder	/usr/lib/libicuuc.so.67 /usr/lib/
-COPY --from=builder	/usr/lib/libicudata.so.67 /usr/lib/
 COPY --from=builder /usr/local/bin/ledger /usr/local/bin/ledger
 
 USER ledger
