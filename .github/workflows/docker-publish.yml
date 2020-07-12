@@ -1,0 +1,37 @@
+on: 
+  push:
+    branches:
+      - main
+  schedule:
+    - cron: '0 1 * * *'
+name: Build and publish to DockerHub
+env:
+  DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+  DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+  DOCKER_REGISTRY: 'docker.io'
+  DOCKER_REPOSITORY: 'ledger'
+jobs:
+  stable:
+    name: stable
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@master
+      - name: Build and Publish stable to DockerHub
+        run: |
+          export DOCKER_BUILD_CONTEXT="stable" 
+          export DOCKER_IMAGE_VERSION=`curl --silent "https://api.github.com/repos/ledger/ledger/releases/latest" | jq .tag_name | xargs`
+          export DOCKER_TAGS="stable,latest,${DOCKER_IMAGE_VERSION}"
+          ./scripts/publish.sh
+  edge:
+    name: edge
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@master
+      - name: Build and Publish edge to DockerHub
+        run: |
+          export DOCKER_BUILD_CONTEXT="edge"
+          export DOCKER_IMAGE_VERSION="master"
+          DATE_TAG=`date --utc --rfc-3339=date`
+          export DOCKER_TAGS="edge,edge-${DATE_TAG}"
+          ./scripts/publish.sh
+

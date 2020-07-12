@@ -1,9 +1,12 @@
-ARG LEDGER_VERSION="master"
+ARG SOURCE
+ARG REVISION
+ARG CREATED
+ARG VERSION
+ARG GIT_REF="${VERSION}"
 
 FROM alpine:edge as builder
 
-ARG LEDGER_VERSION
-ENV LEDGER_VERSION "${LEDGER_VERSION}"
+ARG GIT_REF
 
 WORKDIR /build
 
@@ -20,7 +23,7 @@ RUN apk add --no-cache \
     gettext \
     git \
     libstdc++ \
-    && git clone --branch "${LEDGER_VERSION}" --depth 1 "https://github.com/ledger/ledger" \
+    && git clone --branch "${GIT_REF}" --depth 1 "https://github.com/ledger/ledger" \
     && cd ledger \
     && ln -s /usr/bin/python3 /usr/bin/python
 
@@ -41,7 +44,10 @@ RUN cd ledger \
 
 FROM scratch
 
-ARG LEDGER_VERSION
+ARG VERSION
+ARG SOURCE
+ARG REVISION
+ARG CREATED
 
 COPY --from=builder /etc/passwd /etc/passwd
 COPY --from=builder /lib/ld-musl-x86_64.so.1 /lib/
@@ -55,8 +61,8 @@ ENTRYPOINT ["ledger"]
 
 LABEL org.opencontainers.image.title="ledger" \
     org.opencontainers.image.description="ledger in Docker" \
-    org.opencontainers.image.url="https://github.com/westonsteimel/docker-ledger" \
-    org.opencontainers.image.source="https://github.com/westonsteimel/docker-ledger" \
-    org.opencontainers.image.version="${LEDGER_VERSION}" \
-    version="${LEDGER_VERSION}"
+    org.opencontainers.image.source="${SOURCE}" \
+    org.opencontainers.image.revision="${REVISION}" \
+    org.opencontainers.image.created="${CREATED}" \
+    org.opencontainers.image.version="${VERSION}"
 
