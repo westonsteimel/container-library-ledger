@@ -39,6 +39,8 @@ RUN cd ledger \
     && make \
     && make install \
     && rm -rf /var/cache \
+    && strip /usr/local/bin/ledger \
+    && if [$TARGETPLATFORM = "linux/amd64"]; then apk add --no-cache upx && upx --lzma --best /usr/local/bin/ledger; fi \
     && addgroup ledger \
     && adduser -G ledger -s /bin/sh -D ledger
 
