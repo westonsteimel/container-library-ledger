@@ -15,7 +15,7 @@ jobs:
     name: stable
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@master
+      - uses: actions/checkout@main
       - name: Build and Publish stable to DockerHub
         run: |
           export DOCKER_BUILD_CONTEXT="stable" 
@@ -26,7 +26,7 @@ jobs:
     name: edge
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@master
+      - uses: actions/checkout@main
       - name: Build and Publish edge to DockerHub
         run: |
           export DOCKER_BUILD_CONTEXT="edge"
