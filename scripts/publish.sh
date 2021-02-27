@@ -52,17 +52,15 @@ echo "${DOCKER_PASSWORD}" | docker login -u "${DOCKER_USERNAME}" --password-stdi
 
 IFS=',' read -ra TAGS <<< "$DOCKER_TAGS"
 for tag in "${TAGS[@]}"; do
-    docker image build --platform "linux/amd64" \
+    docker buildx build --platform "linux/amd64" \
         --build-arg SOURCE \
         --build-arg REVISION \
         --build-arg CREATED \
         --build-arg VERSION \
         --tag "${BASE_NAME}:${tag}" \
+        --push \
         --file "${DOCKER_FILE}" \
         "${DOCKER_BUILD_CONTEXT}"
-
 done
 
-docker push "${BASE_NAME}"
-
-docker logout
+docker logout 
