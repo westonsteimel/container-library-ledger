@@ -5,12 +5,13 @@ on:
       - main
   schedule:
     - cron: '0 1 * * SAT'
-name: Build and publish to DockerHub
+name: Build and publish images
 env:
   DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
   DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
-  DOCKER_REGISTRY: 'docker.io'
-  DOCKER_REPOSITORY: 'ledger'
+  GHCR_TOKEN: ${{ secrets.GHCR_TOKEN }}
+  QUAY_USERNAME: ${{ secrets.QUAY_USERNAME }}
+  QUAY_PASSWORD: ${{ secrets.QUAY_PASSWORD }}
 jobs:
   stable:
     name: stable
@@ -25,12 +26,18 @@ jobs:
       -
         name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
-      - name: Build and Publish stable to DockerHub
+      - 
+        name: Build and Publish stable images
         run: |
-          export DOCKER_BUILD_CONTEXT="stable" 
-          export DOCKER_IMAGE_VERSION=`curl --silent "https://api.github.com/repos/ledger/ledger/releases/latest" | jq .tag_name | xargs`
-          export DOCKER_TAGS="stable,latest,${DOCKER_IMAGE_VERSION}"
-          ./scripts/publish.sh
+            git config user.email "github-actions[bot]@users.noreply.github.com"
+            git config user.name "github-actions[bot]"
+            ./scripts/update-stable.sh
+            export DOCKER_BUILD_CONTEXT="stable"
+            export DOCKER_IMAGE_VERSION=`sed -ne "s/^ARG VERSION=['\"]\([^'\"]*\)['\"]/\1/p" stable/Dockerfile`
+            export DOCKER_TAGS="stable,latest,${DOCKER_IMAGE_VERSION}"
+            ./scripts/publish.sh
+            git push
+
   edge:
     name: edge
     runs-on: ubuntu-latest
@@ -44,10 +51,14 @@ jobs:
       -
         name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
-      - name: Build and Publish edge to DockerHub
+      - name: Build and Publish edge images
         run: |
-          export DOCKER_BUILD_CONTEXT="edge"
-          export DOCKER_IMAGE_VERSION="master"
-          export DOCKER_TAGS="edge"
-          ./scripts/publish.sh
+            git config user.email "github-actions[bot]@users.noreply.github.com"
+            git config user.name "github-actions[bot]"
+            ./scripts/update-edge.sh
+            export DOCKER_BUILD_CONTEXT="edge"
+            export DOCKER_IMAGE_VERSION="master"
+            export DOCKER_TAGS="edge"
+            ./scripts/publish.sh
+            git push
 

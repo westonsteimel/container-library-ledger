@@ -1,12 +1,10 @@
-ARG SOURCE
-ARG REVISION
-ARG CREATED
-ARG VERSION
-ARG GIT_REF="${VERSION}"
+ARG VERSION="master"
+ARG REVISION="460a5661ac20789aa578dc9fb20f3a1ed47e5699"
 
 FROM alpine:latest as builder
 
-ARG GIT_REF
+ARG VERSION
+ARG REVISION
 
 WORKDIR /build
 
@@ -23,9 +21,12 @@ RUN apk add --no-cache \
     gettext \
     git \
     libstdc++ \
-    && git clone --branch "${GIT_REF}" --depth 1 "https://github.com/ledger/ledger" \
+    && git clone --branch "${VERSION}" "https://github.com/ledger/ledger" \
     && cd ledger \
+    && git reset --hard "${REVISION}" \
     && ln -s /usr/bin/python3 /usr/bin/python
+
+ENV BOOST_BIND_GLOBAL_PLACEHOLDERS=1
 
 RUN cd ledger \
     && cmake . -DCMAKE_BUILD_TYPE=Release \
@@ -47,9 +48,9 @@ RUN cd ledger \
 FROM scratch
 
 ARG VERSION
-ARG SOURCE
 ARG REVISION
-ARG CREATED
+ENV LEDGER_VERSION="${VERSION}" \
+    LEDGER_REVISION="${REVISION}"
 
 COPY --from=builder /etc/passwd /etc/passwd
 COPY --from=builder /lib/ld-musl-x86_64.so.1 /lib/
@@ -63,8 +64,6 @@ ENTRYPOINT ["ledger"]
 
 LABEL org.opencontainers.image.title="ledger" \
     org.opencontainers.image.description="ledger in Docker" \
-    org.opencontainers.image.source="${SOURCE}" \
     org.opencontainers.image.revision="${REVISION}" \
-    org.opencontainers.image.created="${CREATED}" \
     org.opencontainers.image.version="${VERSION}"
 
