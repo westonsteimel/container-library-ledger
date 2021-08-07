@@ -21,12 +21,18 @@ RUN apk add --no-cache \
     gettext \
     git \
     libstdc++ \
+    icu-static \
+    icu-dev \
+    icu-data \
+    libbz2 \
+    bzip2-static \
+    bzip2-dev \
+    zlib-static \
+    zlib-dev \
     && git clone --branch "v${VERSION}" "https://github.com/ledger/ledger" \
     && cd ledger \
     && git reset --hard "${REVISION}" \
     && ln -s /usr/bin/python3 /usr/bin/python
-
-ENV BOOST_BIND_GLOBAL_PLACEHOLDERS=1
 
 RUN cd ledger \
     && cmake . -DCMAKE_BUILD_TYPE=Release \
