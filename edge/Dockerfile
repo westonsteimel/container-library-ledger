@@ -32,7 +32,6 @@ RUN apk add --no-cache \
     && git clone --branch "${VERSION}" "https://github.com/ledger/ledger" \
     && cd ledger \
     && git reset --hard "${REVISION}" \
-    && ln -s /usr/bin/python3 /usr/bin/python
 
 RUN cd ledger \
     && cmake . -DCMAKE_BUILD_TYPE=Release \
