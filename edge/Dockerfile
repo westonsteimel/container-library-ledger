@@ -29,6 +29,8 @@ RUN apk add --no-cache \
     bzip2-dev \
     zlib-static \
     zlib-dev \
+    xz-static \
+    xz-dev \
     && git clone --branch "${VERSION}" "https://github.com/ledger/ledger" \
     && cd ledger \
     && git checkout "${REVISION}"
