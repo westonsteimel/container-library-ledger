@@ -31,7 +31,7 @@ RUN apk add --no-cache \
     zlib-dev \
     && git clone --branch "v${VERSION}" "https://github.com/ledger/ledger" \
     && cd ledger \
-    && git reset --hard "${REVISION}" \
+    && git checkout "${REVISION}"
 
 RUN cd ledger \
     && cmake . -DCMAKE_BUILD_TYPE=Release \
