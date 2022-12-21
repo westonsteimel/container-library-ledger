@@ -27,27 +27,27 @@ jobs:
             git config user.name "github-actions[bot]"
             ./scripts/update.sh
             git push
-  stable:
-    needs: update
-    name: stable
-    runs-on: ubuntu-latest
-    steps:
-      -
-        name: Checkout
-        uses: actions/checkout@main
-      -
-        name: Set up QEMU
-        uses: docker/setup-qemu-action@v1
-      -
-        name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v1
-      - 
-        name: Build and Publish stable docker images
-        run: |
-            export DOCKER_BUILD_CONTEXT="stable"
-            export DOCKER_IMAGE_VERSION=`sed -ne "s/^ARG VERSION=['\"]\([^'\"]*\)['\"]/\1/p" stable/Dockerfile`
-            export DOCKER_TAGS="stable,latest,${DOCKER_IMAGE_VERSION}"
-            ./scripts/publish.sh
+            #  stable:
+            #    needs: update
+            #    name: stable
+            #    runs-on: ubuntu-latest
+            #    steps:
+            #      -
+            #        name: Checkout
+            #        uses: actions/checkout@main
+            #      -
+            #        name: Set up QEMU
+            #        uses: docker/setup-qemu-action@v1
+            #      -
+            #        name: Set up Docker Buildx
+            #        uses: docker/setup-buildx-action@v1
+            #      - 
+            #        name: Build and Publish stable docker images
+            #        run: |
+            #            export DOCKER_BUILD_CONTEXT="stable"
+            #            export DOCKER_IMAGE_VERSION=`sed -ne "s/^ARG VERSION=['\"]\([^'\"]*\)['\"]/\1/p" stable/Dockerfile`
+            #            export DOCKER_TAGS="stable,latest,${DOCKER_IMAGE_VERSION}"
+            #            ./scripts/publish.sh
   edge:
     needs: update
     name: edge
