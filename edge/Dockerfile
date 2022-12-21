@@ -23,7 +23,7 @@ RUN apk add --no-cache \
     libstdc++ \
     icu-static \
     icu-dev \
-    icu-data \
+    icu-data-en \
     libbz2 \
     bzip2-static \
     bzip2-dev \
@@ -60,6 +60,7 @@ ENV LEDGER_VERSION="${VERSION}" \
 COPY --from=builder /etc/passwd /etc/passwd
 COPY --from=builder /lib/ld-musl-x86_64.so.1 /lib/
 COPY --from=builder /usr/local/bin/ledger /usr/local/bin/ledger
+COPY --from=builder /usr/share/icu /usr/share/icu
 
 USER ledger
 
